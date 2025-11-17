@@ -19,7 +19,7 @@ export interface ApiClient {
 
 export interface RequestOptions {
   headers?: Record<string, string>;
-  params?: Record<string, string | number | boolean | undefined>;
+  params?: Record<string, string | number | boolean | undefined> | { [key: string]: any };
   timeout?: number;
   signal?: AbortSignal;
   validator?: z.ZodSchema<any>; // Optional Zod schema for response validation
@@ -28,7 +28,7 @@ export interface RequestOptions {
 /**
  * Build headers for the request, including authentication
  */
-function buildHeaders(config: FarmerServiceConfig, extra?: Record<string, string>): HeadersInit {
+function buildHeaders(config: FarmerServiceConfig, extra?: Record<string, string>): Record<string, string> {
   const headers: Record<string, string> = { ...config.defaultHeaders, ...(extra || {}) };
   const token = config.getAccessToken?.();
   if (token) {

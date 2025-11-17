@@ -146,6 +146,8 @@ export * from './admin.types';
 export * from './dataQuality.types';
 export * from './crop.types';
 export * from './stages.types';
-export * from './cropStages.types';
+// Note: cropStages exports are available via direct import to avoid conflicts with stages.types
+export * as CropStagesTypes from './cropStages.types';
 export * from './cropCycles.types';
 export * from './organization.types';
+export * from './fpoConfig.types';

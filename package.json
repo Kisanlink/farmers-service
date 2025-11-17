@@ -1,13 +1,42 @@
 {
-  "name": "farmers-service",
-  "version": "1.0.0",
+  "name": "@kisanlink/farmers-service",
+  "version": "1.1.0",
   "description": "Farmers Service SDK",
-  "main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kisanlink/farmers-service.git"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "zod": "^3.22.4"

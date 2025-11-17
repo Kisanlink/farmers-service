@@ -24,6 +24,7 @@ import createStagesService from './services/stagesService';
 import createCropStagesService from './services/cropStagesService';
 import createCropCyclesService from './services/cropCyclesService';
 import createOrganizationService from './services/organizationService';
+import createFPOConfigService from './services/fpoConfigService';
 
 /**
  * Create farmers service with all sub-services
@@ -61,6 +62,7 @@ const createFarmerService = (config: FarmerServiceConfig) => {
     cropStages: createCropStagesService(apiClient),
     cropCycles: createCropCyclesService(apiClient),
     organization: createOrganizationService(apiClient),
+    fpoConfig: createFPOConfigService(apiClient),
   };
 };
 
@@ -91,3 +93,4 @@ export { default as createStagesService } from './services/stagesService';
 export { default as createCropStagesService } from './services/cropStagesService';
 export { default as createCropCyclesService } from './services/cropCyclesService';
 export { default as createOrganizationService } from './services/organizationService';
+export { default as createFPOConfigService } from './services/fpoConfigService';

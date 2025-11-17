@@ -51,6 +51,7 @@ export interface FarmerListQueryParams {
   page_size?: number;
   aaa_org_id?: string;
   kisan_sathi_user_id?: string;
+  phone_number?: string;
 }
 
 export interface FarmerLinkageData {

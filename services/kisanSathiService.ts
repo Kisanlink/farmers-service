@@ -13,7 +13,6 @@ import {
   KisanSathiResponse,
   KisanSathiAssignmentResponse
 } from '../types/kisanSathi.types';
-import { BaseResponse } from '../types';
 
 /**
  * Create KisanSathi service with injected API client

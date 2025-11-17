@@ -1,6 +1,9 @@
 /**
  * KisanSathi Service Types
  * Types for KisanSathi (field agent) management operations
+ *
+ * NOTE: Some KisanSathi types are exported from identity.types.ts
+ * to avoid duplication
  */
 
 export interface CreateKisanSathiRequest {
@@ -17,11 +20,12 @@ export interface AssignKisanSathiRequest {
   org_id: string;
 }
 
-export interface ReassignKisanSathiRequest {
-  farmer_id: string;
-  kisan_sathi_user_id: string;
-  org_id: string;
-}
+// Re-export from identity.types to maintain backward compatibility
+export type {
+  ReassignKisanSathiRequest,
+  KisanSathiAssignmentData,
+  KisanSathiAssignmentResponse
+} from './identity.types';
 
 export interface KisanSathiData {
   id: string;
@@ -35,24 +39,9 @@ export interface KisanSathiData {
   updated_at: string;
 }
 
-export interface KisanSathiAssignmentData {
-  farmer_id: string;
-  kisan_sathi_user_id: string;
-  org_id: string;
-  assigned_at: string;
-  is_active: boolean;
-}
-
 export interface KisanSathiResponse {
   success: boolean;
   message: string;
   request_id: string;
   data: KisanSathiData;
-}
-
-export interface KisanSathiAssignmentResponse {
-  success: boolean;
-  message: string;
-  request_id: string;
-  data: KisanSathiAssignmentData;
 }

@@ -489,7 +489,7 @@ export interface ApiConfig {
 // FPO Management Types
 export interface CreateFPORequest {
   name: string;
-  registration_no: string;
+  registration_number: string;
   ceo_user: {
     name: string;
     email?: string;
@@ -514,7 +514,7 @@ export interface RegisterFPORequest {
   business_config?: Record<string, string>;
   metadata?: Record<string, string>;
   org_id?: string;
-  registration_no?: string;
+  registration_number?: string;
   request_id?: string;
   request_type?: string;
   timestamp?: string;
@@ -555,7 +555,7 @@ export interface FPOReferenceResponse {
     id: string;
     metadata?: Record<string, string>;
     name: string;
-    registration_no: string;
+    registration_number: string;
     status: string;
     updated_at: string;
   };

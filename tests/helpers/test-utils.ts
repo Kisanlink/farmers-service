@@ -6,7 +6,7 @@
  */
 
 import { vi, expect } from 'vitest';
-import createFarmerService from '../../index_new';
+import createFarmerService from '../../index';
 import { createMockServer, setupMockFetch, clearMockFetch, MockServer } from './mock-server';
 import { FarmerServiceConfig } from '../../config';
 

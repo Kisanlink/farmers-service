@@ -1,30 +1,20 @@
 /**
  * Linkage Service Types
  * Types for farmer-FPO linkage operations
+ *
+ * NOTE: Main linkage types are exported from identity.types.ts
+ * to avoid duplication
  */
 
-export interface LinkFarmerRequest {
-  farmer_id: string;
-  org_id: string;
-  role?: string;
-}
+// Re-export from identity.types to maintain backward compatibility
+export type {
+  LinkFarmerRequest,
+  FarmerLinkageData,
+  FarmerLinkageResponse
+} from './identity.types';
 
+// This type is unique to linkage service
 export interface UnlinkFarmerRequest {
   farmer_id: string;
   org_id: string;
-}
-
-export interface FarmerLinkageData {
-  farmer_id: string;
-  org_id: string;
-  role?: string;
-  linked_at: string;
-  is_active: boolean;
-}
-
-export interface FarmerLinkageResponse {
-  success: boolean;
-  message: string;
-  request_id: string;
-  data: FarmerLinkageData;
 }

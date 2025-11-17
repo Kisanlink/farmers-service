@@ -1,0 +1,40 @@
+# Source files (only ship compiled)
+*.ts
+!*.d.ts
+
+# Config files
+tsconfig.json
+vitest.config.ts
+.eslintrc*
+.prettierrc*
+
+# Tests
+tests/
+**/*.test.ts
+**/*.spec.ts
+coverage/
+
+# Documentation (development only)
+.kiro/
+
+# Development
+node_modules/
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Misc
+.DS_Store
+*.swp
+*.swo
+.env*
