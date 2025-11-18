@@ -33,6 +33,7 @@
     "build:watch": "tsc --watch",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
+    "prepare": "npm run build",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
