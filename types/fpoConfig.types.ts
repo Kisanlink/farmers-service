@@ -4,13 +4,78 @@
  */
 
 /**
+ * ERP Type enum
+ */
+export type ERPType = 'SAP' | 'ORACLE' | 'MICROSOFT_DYNAMICS' | 'ODOO' | 'CUSTOM';
+
+/**
+ * Auth Method enum
+ */
+export type AuthMethod = 'API_KEY' | 'OAUTH2' | 'BASIC';
+
+/**
+ * API Key credentials
+ */
+export interface APIKeyCredentials {
+  api_key: string;
+  api_secret?: string;
+}
+
+/**
+ * OAuth2 credentials
+ */
+export interface OAuth2Credentials {
+  client_id: string;
+  client_secret: string;
+  authorization_url: string;
+  token_url: string;
+  scope?: string;
+}
+
+/**
+ * Basic Auth credentials
+ */
+export interface BasicAuthCredentials {
+  username: string;
+  password: string;
+}
+
+/**
+ * Credentials union type
+ */
+export type ERPCredentials = APIKeyCredentials | OAuth2Credentials | BasicAuthCredentials;
+
+/**
  * Features configuration for FPO
+ * Now includes ERP integration details
  */
 export interface FPOFeatures {
+  // ERP Integration fields
+  erp_type?: ERPType;
+  auth_method?: AuthMethod;
+  credentials?: ERPCredentials;
+  api_endpoint?: string;
+
+  // Integration settings
+  auto_sync_enabled?: boolean;
+  sync_frequency?: 'HOURLY' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'MANUAL';
+  sync_direction?: 'TO_ERP' | 'FROM_ERP' | 'BIDIRECTIONAL';
+  webhooks_enabled?: boolean;
+  webhook_url?: string;
+  webhook_secret?: string;
+
+  // Advanced settings
+  request_timeout?: number;
+  retry_attempts?: number;
+  logging_enabled?: boolean;
+  custom_headers?: Record<string, string>;
+
+  // Feature flags
   ecommerce_enabled?: boolean;
   inventory_management?: boolean;
   order_tracking?: boolean;
   payment_gateway?: boolean;
+
   [key: string]: any; // Allow additional dynamic features
 }
 
