@@ -126,7 +126,9 @@ export enum APIHealthStatus {
  * FPO Configuration data structure
  */
 export interface FPOConfigData {
-  fpo_id: string;
+  id?: string; // FPO configuration ID (same as aaa_org_id)
+  aaa_org_id: string; // AAA Organization ID
+  fpo_id?: string; // Deprecated: Use aaa_org_id instead
   fpo_name: string;
   erp_base_url: string;
   erp_api_version: string;
@@ -145,7 +147,7 @@ export interface FPOConfigData {
  * Request to create a new FPO configuration
  */
 export interface CreateFPOConfigRequest {
-  fpo_id: string;
+  aaa_org_id: string;
   fpo_name: string;
   erp_base_url: string;
   erp_api_version: string;
@@ -185,7 +187,8 @@ export interface ListFPOConfigsQueryParams {
  * Health check data for FPO's ERP endpoint
  */
 export interface FPOHealthCheckData {
-  fpo_id: string;
+  aaa_org_id: string;
+  fpo_id?: string; // Deprecated: Use aaa_org_id instead
   status: APIHealthStatus;
   response_time_ms?: number;
   last_checked_at: string;
