@@ -16,7 +16,7 @@ import {
  * Create linkage service with injected API client
  */
 const createLinkageService = (apiClient: ApiClient) => {
-  const basePath = '/identity';
+  const basePath = '/api/v1/identity';
 
   return {
     /**
