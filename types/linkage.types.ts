@@ -15,6 +15,6 @@ export type {
 
 // This type is unique to linkage service
 export interface UnlinkFarmerRequest {
-  farmer_id: string;
-  org_id: string;
+  aaa_user_id: string;
+  aaa_org_id: string;
 }

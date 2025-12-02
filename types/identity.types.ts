@@ -35,8 +35,8 @@ export interface UpdateFarmerRequest {
 }
 
 export interface LinkFarmerRequest {
-  user_id: string;
-  org_id: string;
+  aaa_user_id: string;
+  aaa_org_id: string;
   role?: string;
 }
 
@@ -55,8 +55,8 @@ export interface FarmerListQueryParams {
 }
 
 export interface FarmerLinkageData {
-  user_id: string;
-  org_id: string;
+  aaa_user_id: string;
+  aaa_org_id: string;
   role?: string;
   linked_at: string;
   is_active: boolean;

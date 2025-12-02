@@ -30,14 +30,14 @@ const createLinkageService = (apiClient: ApiClient) => {
      * Unlink a farmer from an FPO organization
      */
     unlinkFarmer: (data: UnlinkFarmerRequest): Promise<FarmerLinkageResponse> => {
-      return apiClient.delete<FarmerLinkageResponse>(`${basePath}/farmer/unlink`, { params: { farmer_id: data.farmer_id, org_id: data.org_id } });
+      return apiClient.delete<FarmerLinkageResponse>(`${basePath}/farmer/unlink`, { params: { aaa_user_id: data.aaa_user_id, aaa_org_id: data.aaa_org_id } });
     },
 
     /**
      * Get farmer linkage status with an organization
      */
-    getFarmerLinkage: (farmerId: string, orgId: string): Promise<FarmerLinkageResponse> => {
-      return apiClient.get<FarmerLinkageResponse>(`${basePath}/farmer/linkage/${farmerId}/${orgId}`);
+    getFarmerLinkage: (aaaUserId: string, aaaOrgId: string): Promise<FarmerLinkageResponse> => {
+      return apiClient.get<FarmerLinkageResponse>(`${basePath}/farmer/linkage/${aaaUserId}/${aaaOrgId}`);
     }
   };
 };

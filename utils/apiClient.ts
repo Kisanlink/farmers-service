@@ -15,6 +15,7 @@ export interface ApiClient {
   put: <T>(endpoint: string, body?: unknown, options?: RequestOptions) => Promise<T>;
   delete: <T>(endpoint: string, options?: RequestOptions) => Promise<T>;
   patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) => Promise<T>;
+  postFormData: <T>(endpoint: string, formData: FormData, options?: RequestOptions) => Promise<T>;
 }
 
 export interface RequestOptions {
@@ -242,6 +243,143 @@ async function request<T>(
 }
 
 /**
+ * Make an HTTP request with FormData (for file uploads)
+ */
+async function requestFormData<T>(
+  config: FarmerServiceConfig,
+  method: string,
+  endpoint: string,
+  formData: FormData,
+  options?: RequestOptions
+): Promise<T> {
+  const baseURL = config.baseURL.replace(/\/$/, '');
+  const url = new URL(`${baseURL}${endpoint}`);
+
+  // Add query parameters
+  if (options?.params) {
+    Object.entries(options.params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) {
+        url.searchParams.set(k, String(v));
+      }
+    });
+  }
+
+  const timeout = options?.timeout || config.timeout || 120000; // Longer timeout for uploads
+  const maxRetries = config.retryConfig?.maxRetries || 3;
+  const retryDelay = config.retryConfig?.retryDelay || 1000;
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      logRequest(config, method, url.toString(), '[FormData]');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      const signal = options?.signal || controller.signal;
+
+      // Build headers without Content-Type (browser sets it with boundary for FormData)
+      const headers: Record<string, string> = { ...(options?.headers || {}) };
+      const token = config.getAccessToken?.();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(url.toString(), {
+        method,
+        headers,
+        body: formData,
+        signal,
+      });
+
+      clearTimeout(timeoutId);
+      logResponse(config, method, url.toString(), response.status);
+
+      if (!response.ok) {
+        if (attempt < maxRetries && isRetryableStatus(response.status, config)) {
+          const delay = retryDelay * Math.pow(2, attempt);
+          await sleep(delay);
+          continue;
+        }
+
+        const text = await response.text().catch(() => '');
+        let errorMessage = `API ${method} ${endpoint} failed: ${response.status}`;
+
+        try {
+          const errorJson = JSON.parse(text);
+          errorMessage = errorJson.message || errorJson.error || errorMessage;
+        } catch {
+          if (text) errorMessage += ` ${text}`;
+        }
+
+        const error = new Error(errorMessage) as any;
+        error.status = response.status;
+        error.response = { status: response.status, data: text };
+
+        logError(config, method, url.toString(), error);
+        throw error;
+      }
+
+      const rawData = await response.json();
+
+      if (options?.validator) {
+        try {
+          const validatedData = validateResponse(options.validator, rawData);
+          return validatedData as T;
+        } catch (validationError: any) {
+          logError(config, method, url.toString(), validationError);
+          const error = new Error(`Response validation failed: ${validationError.message}`) as any;
+          error.status = 500;
+          error.response = { status: 500, data: rawData };
+          error.validationError = validationError;
+          throw error;
+        }
+      }
+
+      return rawData as T;
+    } catch (error: any) {
+      lastError = error;
+
+      if (error.name === 'AbortError') {
+        const timeoutError = new Error(`Request timeout after ${timeout}ms`) as any;
+        timeoutError.status = 408;
+        logError(config, method, url.toString(), timeoutError);
+        throw timeoutError;
+      }
+
+      if (error.message.includes('fetch')) {
+        if (attempt < maxRetries) {
+          const delay = retryDelay * Math.pow(2, attempt);
+          await sleep(delay);
+          continue;
+        }
+      }
+
+      if (error.status && error.status >= 400 && error.status < 500 &&
+          !isRetryableStatus(error.status, config)) {
+        logError(config, method, url.toString(), error);
+        throw error;
+      }
+
+      if (attempt < maxRetries) {
+        const delay = retryDelay * Math.pow(2, attempt);
+        await sleep(delay);
+        continue;
+      }
+
+      logError(config, method, url.toString(), error);
+      throw error;
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  throw new Error('Request failed after all retry attempts');
+}
+
+/**
  * Factory function to create an API client with injectable configuration
  *
  * @param config - API configuration (baseURL, headers, token getter)
@@ -270,6 +408,9 @@ const createApiClient = (config: FarmerServiceConfig): ApiClient => {
 
     patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
       request<T>(config, 'PATCH', endpoint, body, options),
+
+    postFormData: <T>(endpoint: string, formData: FormData, options?: RequestOptions) =>
+      requestFormData<T>(config, 'POST', endpoint, formData, options),
   };
 };
 
