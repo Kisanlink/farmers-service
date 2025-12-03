@@ -9,7 +9,10 @@ import { ApiClient } from '../utils/apiClient';
 import {
   LinkFarmerRequest,
   UnlinkFarmerRequest,
-  FarmerLinkageResponse
+  FarmerLinkageResponse,
+  BulkLinkFarmersRequest,
+  BulkUnlinkFarmersRequest,
+  BulkLinkageResponse
 } from '../types/linkage.types';
 
 /**
@@ -38,6 +41,40 @@ const createLinkageService = (apiClient: ApiClient) => {
      */
     getFarmerLinkage: (aaaUserId: string, aaaOrgId: string): Promise<FarmerLinkageResponse> => {
       return apiClient.get<FarmerLinkageResponse>(`${basePath}/farmer/linkage/${aaaUserId}/${aaaOrgId}`);
+    },
+
+    /**
+     * Bulk link multiple farmers to an FPO organization
+     *
+     * @param data - Request containing aaa_org_id, aaa_user_ids array, and continue_on_error flag
+     * @returns Response with success/failure counts and individual results
+     *
+     * @example
+     * const result = await linkageService.bulkLinkFarmers({
+     *   aaa_org_id: 'ORGN00000005',
+     *   aaa_user_ids: ['USR00000001', 'USR00000002'],
+     *   continue_on_error: true
+     * });
+     */
+    bulkLinkFarmers: (data: BulkLinkFarmersRequest): Promise<BulkLinkageResponse> => {
+      return apiClient.post<BulkLinkageResponse>(`${basePath}/farmer/bulk-link`, data);
+    },
+
+    /**
+     * Bulk unlink multiple farmers from an FPO organization
+     *
+     * @param data - Request containing aaa_org_id, aaa_user_ids array, and continue_on_error flag
+     * @returns Response with success/failure counts and individual results
+     *
+     * @example
+     * const result = await linkageService.bulkUnlinkFarmers({
+     *   aaa_org_id: 'ORGN00000005',
+     *   aaa_user_ids: ['USR00000001', 'USR00000002'],
+     *   continue_on_error: true
+     * });
+     */
+    bulkUnlinkFarmers: (data: BulkUnlinkFarmersRequest): Promise<BulkLinkageResponse> => {
+      return apiClient.deleteWithBody<BulkLinkageResponse>(`${basePath}/farmer/bulk-unlink`, data);
     }
   };
 };

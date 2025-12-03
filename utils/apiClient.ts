@@ -14,6 +14,7 @@ export interface ApiClient {
   post: <T>(endpoint: string, body?: unknown, options?: RequestOptions) => Promise<T>;
   put: <T>(endpoint: string, body?: unknown, options?: RequestOptions) => Promise<T>;
   delete: <T>(endpoint: string, options?: RequestOptions) => Promise<T>;
+  deleteWithBody: <T>(endpoint: string, body: unknown, options?: RequestOptions) => Promise<T>;
   patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) => Promise<T>;
   postFormData: <T>(endpoint: string, formData: FormData, options?: RequestOptions) => Promise<T>;
 }
@@ -405,6 +406,9 @@ const createApiClient = (config: FarmerServiceConfig): ApiClient => {
 
     delete: <T>(endpoint: string, options?: RequestOptions) =>
       request<T>(config, 'DELETE', endpoint, undefined, options),
+
+    deleteWithBody: <T>(endpoint: string, body: unknown, options?: RequestOptions) =>
+      request<T>(config, 'DELETE', endpoint, body, options),
 
     patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
       request<T>(config, 'PATCH', endpoint, body, options),
