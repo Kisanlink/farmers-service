@@ -21,7 +21,10 @@ import {
   SuspendFPORequest,
   ReactivateFPORequest,
   DeactivateFPORequest,
-  AuditHistoryResponse
+  AuditHistoryResponse,
+  // CEO management types
+  UpdateCEORequest,
+  UpdateCEOResponse
 } from '../types/fpo.types';
 
 /**
@@ -208,6 +211,35 @@ const createFPOService = (apiClient: ApiClient) => {
       const url = query ? `${basePath}/${fpoId}/history?${query}` : `${basePath}/${fpoId}/history`;
 
       return apiClient.get<AuditHistoryResponse>(url);
+    },
+
+    // ==================== CEO MANAGEMENT ====================
+
+    /**
+     * Update FPO CEO
+     *
+     * Assigns the CEO role to a new user for the specified FPO organization.
+     * The previous CEO's role is not automatically revoked - handle that separately if needed.
+     *
+     * **Validation performed by backend:**
+     * - Organization must exist in AAA service
+     * - New CEO user must exist in AAA service
+     * - New CEO cannot already be CEO of another FPO
+     *
+     * @param aaaOrgId - The AAA Organization ID
+     * @param request - Request containing the new CEO user ID
+     * @returns Promise with update confirmation
+     *
+     * @example
+     * ```typescript
+     * const result = await fpoService.updateCEO('ORGN00000003', {
+     *   new_ceo_user_id: 'USER00000123'
+     * });
+     * console.log(`CEO updated: ${result.data.role_assigned}`);
+     * ```
+     */
+    updateCEO: (aaaOrgId: string, request: UpdateCEORequest): Promise<UpdateCEOResponse> => {
+      return apiClient.put<UpdateCEOResponse>(`${basePath}/org/${aaaOrgId}/ceo`, request);
     }
   };
 };

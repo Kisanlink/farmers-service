@@ -460,3 +460,63 @@ export interface AuditHistoryResponse {
     offset: number;
   };
 }
+
+// ==================== CEO MANAGEMENT TYPES ====================
+
+/**
+ * Request to update FPO CEO
+ *
+ * Updates the CEO of an FPO organization by assigning the CEO role to a new user.
+ *
+ * **Validation:**
+ * - The organization must exist in AAA service
+ * - The new CEO user must exist in AAA service
+ * - The new CEO cannot already be CEO of another FPO
+ *
+ * @example
+ * ```typescript
+ * const request: UpdateCEORequest = {
+ *   new_ceo_user_id: 'USER00000123'
+ * };
+ * await fpoService.updateCEO('ORGN00000003', request);
+ * ```
+ */
+export interface UpdateCEORequest {
+  /**
+   * The AAA User ID of the new CEO
+   * Must be an existing user in AAA service
+   * @example "USER00000123"
+   */
+  new_ceo_user_id: string;
+}
+
+/**
+ * Data returned from CEO update operation
+ */
+export interface UpdateCEOData {
+  /**
+   * The AAA Organization ID
+   */
+  aaa_org_id: string;
+
+  /**
+   * The new CEO's AAA User ID
+   */
+  new_ceo_user_id: string;
+
+  /**
+   * Whether the CEO role was successfully assigned
+   */
+  role_assigned: boolean;
+}
+
+/**
+ * Response from update CEO endpoint
+ */
+export interface UpdateCEOResponse {
+  success: boolean;
+  message: string;
+  request_id: string;
+  timestamp?: string;
+  data: UpdateCEOData;
+}
