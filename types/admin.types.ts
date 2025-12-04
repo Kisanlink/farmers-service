@@ -73,3 +73,58 @@ export interface AuditResponse {
   page_size: number;
   total: number;
 }
+
+/**
+ * Entity types that can be permanently deleted
+ */
+export type PermanentDeleteEntityType = 'farmer' | 'farm' | 'crop_cycle' | 'farmer_link';
+
+/**
+ * Request to permanently delete a single entity with cascade
+ */
+export interface PermanentDeleteRequest {
+  entity_type: PermanentDeleteEntityType;
+  entity_id: string;
+}
+
+/**
+ * Request to permanently delete all data for an organization
+ */
+export interface PermanentDeleteOrgRequest {
+  org_id: string;
+  dry_run?: boolean;
+}
+
+/**
+ * Report of deleted records
+ */
+export interface DeleteReport {
+  farmers_deleted: number;
+  farms_deleted: number;
+  crop_cycles_deleted: number;
+  activities_deleted: number;
+  farmer_links_deleted: number;
+}
+
+/**
+ * Response for permanent delete operations
+ */
+export interface PermanentDeleteResponse {
+  success: boolean;
+  message: string;
+  request_id?: string;
+  deleted_by?: string;
+  dry_run?: boolean;
+  report: DeleteReport;
+}
+
+/**
+ * Response for cleanup orphaned records operation
+ */
+export interface CleanupOrphanedResponse {
+  success: boolean;
+  message: string;
+  request_id?: string;
+  deleted_by?: string;
+  report: DeleteReport;
+}
