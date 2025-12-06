@@ -123,6 +123,11 @@ export enum APIHealthStatus {
 }
 
 /**
+ * Configuration status enum
+ */
+export type FPOConfigStatus = 'configured' | 'not_configured' | 'pending' | 'error';
+
+/**
  * FPO Configuration data structure
  */
 export interface FPOConfigData {
@@ -131,11 +136,13 @@ export interface FPOConfigData {
   fpo_id?: string; // Deprecated: Use aaa_org_id instead
   fpo_name: string;
   erp_base_url: string;
-  erp_api_version: string;
+  erp_ui_base_url?: string; // Optional UI base URL for ERP system
+  erp_api_version?: string; // Now optional
   features?: FPOFeatures;
   contact?: FPOContact;
   business_hours?: FPOBusinessHours;
   metadata?: FPOMetadata;
+  config_status?: FPOConfigStatus; // Configuration status
   api_health_status?: APIHealthStatus;
   last_synced_at?: string;
   sync_interval_minutes?: number;
@@ -150,7 +157,8 @@ export interface CreateFPOConfigRequest {
   aaa_org_id: string;
   fpo_name: string;
   erp_base_url: string;
-  erp_api_version: string;
+  erp_ui_base_url?: string;
+  erp_api_version?: string;
   features?: FPOFeatures;
   contact?: FPOContact;
   business_hours?: FPOBusinessHours;
@@ -164,6 +172,7 @@ export interface CreateFPOConfigRequest {
 export interface UpdateFPOConfigRequest {
   fpo_name?: string;
   erp_base_url?: string;
+  erp_ui_base_url?: string;
   erp_api_version?: string;
   features?: FPOFeatures;
   contact?: FPOContact;
