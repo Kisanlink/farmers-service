@@ -17,11 +17,11 @@ import {
   FPOConfigResponse,
   FPOConfigListResponse,
   FPOHealthCheckResponse,
+  FPOConfigDeleteResponse,
   CreateFPOConfigRequest,
   UpdateFPOConfigRequest,
   ListFPOConfigsQueryParams
 } from '../types/fpoConfig.types';
-import { BaseResponse } from '../types';
 
 /**
  * Create FPO configuration service with injected API client
@@ -35,16 +35,19 @@ const createFPOConfigService = (apiClient: ApiClient) => {
      * Get FPO configuration by AAA Organization ID
      *
      * Returns the configuration for the specified FPO. If the FPO is not configured,
-     * the response will include `config_status: "not_configured"` in metadata.
+     * the response will include `metadata.config_status: "not_configured"` and
+     * `metadata.message: "FPO configuration has not been set up yet"`.
+     * Fields like fpo_name, erp_base_url will be empty strings.
      *
      * @param aaaOrgId - The AAA Organization ID
      * @returns Promise resolving to FPO configuration
      *
      * @example
      * const config = await fpoConfig.getFPOConfig('ORGN00000003');
-     * console.log(config.data.erp_base_url);
-     * if (config.data.config_status === 'not_configured') {
+     * if (config.data.metadata?.config_status === 'not_configured') {
      *   console.log('FPO needs configuration');
+     * } else {
+     *   console.log(`ERP URL: ${config.data.erp_base_url}`);
      * }
      */
     getFPOConfig: (aaaOrgId: string): Promise<FPOConfigResponse> => {
@@ -99,17 +102,18 @@ const createFPOConfigService = (apiClient: ApiClient) => {
     /**
      * Delete an FPO configuration (Super Admin only)
      *
-     * Permanently removes the FPO configuration. This action requires
-     * Super Admin privileges.
+     * Soft-deletes the FPO configuration. This action requires
+     * Super Admin privileges (fpo:delete permission).
      *
      * @param aaaOrgId - The AAA Organization ID
-     * @returns Promise resolving to deletion confirmation
+     * @returns Promise resolving to deletion confirmation (no data field in response)
      *
      * @example
-     * await fpoConfig.deleteFPOConfig('ORGN00000003');
+     * const result = await fpoConfig.deleteFPOConfig('ORGN00000003');
+     * console.log(result.message); // "FPO configuration deleted successfully"
      */
-    deleteFPOConfig: (aaaOrgId: string): Promise<BaseResponse> => {
-      return apiClient.delete<BaseResponse>(`${basePath}/${aaaOrgId}/configuration`);
+    deleteFPOConfig: (aaaOrgId: string): Promise<FPOConfigDeleteResponse> => {
+      return apiClient.delete<FPOConfigDeleteResponse>(`${basePath}/${aaaOrgId}/configuration`);
     },
 
     /**
@@ -136,6 +140,8 @@ const createFPOConfigService = (apiClient: ApiClient) => {
      * Performs a health check on the configured ERP endpoint for the FPO.
      * Returns status information including response time and any error messages.
      *
+     * Status can be: 'healthy', 'unhealthy', or 'not_configured'
+     *
      * @param aaaOrgId - The AAA Organization ID
      * @returns Promise resolving to health check status
      *
@@ -143,8 +149,10 @@ const createFPOConfigService = (apiClient: ApiClient) => {
      * const health = await fpoConfig.checkERPHealth('ORGN00000003');
      * if (health.data.status === 'healthy') {
      *   console.log(`ERP is healthy! Response time: ${health.data.response_time_ms}ms`);
+     * } else if (health.data.status === 'not_configured') {
+     *   console.log('FPO configuration has not been set up yet');
      * } else {
-     *   console.log(`ERP issue: ${health.data.error_message}`);
+     *   console.log(`ERP issue: ${health.data.error}`);
      * }
      */
     checkERPHealth: (aaaOrgId: string): Promise<FPOHealthCheckResponse> => {

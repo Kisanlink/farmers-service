@@ -135,11 +135,18 @@ async function request<T>(
       // Use provided signal if available, otherwise use controller signal
       const signal = options?.signal || controller.signal;
 
+      // Build headers with Content-Type for JSON requests
+      const headers = buildHeaders(config, options?.headers);
+      if (body !== undefined && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+      }
+
       const response = await fetch(url.toString(), {
         method,
-        headers: buildHeaders(config, options?.headers),
+        headers,
         body: body !== undefined ? JSON.stringify(body) : undefined,
         signal,
+        credentials: 'include', // Explicitly omit credentials/cookies to prevent CORS issues
       });
 
       clearTimeout(timeoutId);
@@ -291,6 +298,7 @@ async function requestFormData<T>(
         headers,
         body: formData,
         signal,
+        credentials: 'include', // Explicitly omit credentials/cookies to prevent CORS issues
       });
 
       clearTimeout(timeoutId);
