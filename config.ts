@@ -13,6 +13,12 @@ export interface FarmerServiceConfig {
   baseURL: string;
 
   /**
+   * Origin header value for CORS requests
+   * @example 'https://myapp.com' or 'http://localhost:3000'
+   */
+  origin?: string;
+
+  /**
    * Default headers to include in all requests
    * @example { 'Content-Type': 'application/json', 'X-API-Version': 'v1' }
    */

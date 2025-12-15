@@ -28,10 +28,16 @@ export interface RequestOptions {
 }
 
 /**
- * Build headers for the request, including authentication
+ * Build headers for the request, including authentication and origin
  */
 function buildHeaders(config: FarmerServiceConfig, extra?: Record<string, string>): Record<string, string> {
   const headers: Record<string, string> = { ...config.defaultHeaders, ...(extra || {}) };
+  
+  // Add Origin header if configured and not already present
+  if (config.origin && !headers['Origin']) {
+    headers['Origin'] = config.origin;
+  }
+  
   const token = config.getAccessToken?.();
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
